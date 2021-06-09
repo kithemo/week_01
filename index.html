@@ -1,155 +1,160 @@
-<!Doctype html>
-<html lang="ko">
-
+<!doctype html>
+<html lang="en">
 <head>
+
+    <!-- Webpage Title -->
+    <title>비전공자를 위한 서적</title>
+
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-          crossorigin="anonymous">
-
+    <!-- Bulma CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-    <link rel="stylesheet" href="../static/mystyle.css">
+
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
     <!-- JS -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-            crossorigin="anonymous"></script>
-
-    <!-- 구글폰트 -->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Cute+Font&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-
-
-    <title>mini project</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 
 
     <script>
 
-
         $(document).ready(function () {
-            listing();
+            showbooks();
         });
 
-        function listing() {
+        function showbooks() {
             $.ajax({
-                type: "GET",
-                url: "http://openapi.seoul.go.kr:8088/78654d4c636b6f6236394246456f43/json/SearchParkInfoService/1/131/",
+                type: 'GET',
+                url: '/api/list',
                 data: {},
                 success: function (response) {
-                    let parks = response['SearchParkInfoService']['row']
-                    for (let i = 0; i < parks.length; i++) {
-                        let name = parks[i]['P_PARK']
-                        let desc = parks[i]['P_LIST_CONTENT']
-                        let image = parks[i]['P_IMG']
-                        let gu = parks[i]['P_ZONE']
-                        let url = parks[i]['TEMPLATE_URL']
-                        let equip = parks[i]['MAIN_EQUIP']
+                    let books = response['all_books']
+                    for (let i = 0; i < books.length; i++) {
+                        let title = books[i]['title']
+                        let img = books[i]['image']
+                        let author = books[i]['author']
+                        let url = books[i]['url']
+                        let tag1 = books[i]['tag1']
+                        let tag2 = books[i]['tag2']
+                        let tag3 = books[i]['tag3']
 
                         let temp_html = `<div class="card">
-                                            <img class="card-img-top"
-                                                 src="${image}"
-                                                 alt="Card image cap">
-                                            <div class="card-body">
-                                                <a target="_blank" href="${url}" class="card-title">${name} / ${gu}</a>
-                                                <p class="card-text">${desc}</p>
+                                                <div class="card-content">
+                                                    <div class="media">
+                                                        <div class="media-left">
+                                                            <figure class="image is-96x96">
+                                                                <img
+                                                                        src="${img}"
+                                                                        alt="Placeholder image"
+                                                                />
+                                                            </figure>
+                                                        </div>
+                                                        <div class="media-content">
+                                                            <a href="${url}" target="_blank" class="star-name title is-4">${title} </a>
+                                                            <br>
+                                                            <p class="subtitle is-6">${author}</p>
+                                                            <p class="subtitle is-6">${tag1}${tag2}${tag3}</p>
+                                                            <br>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <footer class="card-footer">
+                                                    <a href="#" onclick="likeStar('${title}')" class="card-footer-item has-text-info">
+                                                        좋아요
+                                                        <span class="icon">
+                                              <i class="fa fa-camera"></i>
+                                            </span>
+                                                    </a>
 
+                                                    <a href="#" onclick="deleteStar('${title}')" class="card-footer-item has-text-black">
+                                                        스크랩
+                                                        <span class="icon">
+                                              <i class="fa fa-camera"></i>
+                                            </span>
+                                                    </a>
+                                                </footer>
+                                            </div>`
 
-                                        </div>
-                                        </div>`
-
-                        $('#cards-box').append(temp_html)
+                        $('#star-box').append(temp_html)
                     }
-
                 }
-            })
+            });
         }
+
+        // function likeStar(name) {
+        //     $.ajax({
+        //         type: 'POST',
+        //         url: '/api/like',
+        //         data: {name_give:name},
+        //         success: function (response) {
+        //             alert(response['msg']);
+        //             window.location.reload()
+        //         }
+        //     });
+        // }
+
+
+        // <a href="#" onClick="deleteStar('${title}')" className="card-footer-item has-text-danger">
+        //     댓글
+        //     <span className="icon">
+        //                                       <i className="fa fa-camera"></i>
+        //                                     </span>
+        // </a>
 
 
     </script>
 
+    <style>
+        .center {
+            text-align: center;
+        }
+
+        .star-list {
+            width: 700px;
+            margin: 20px auto 0 auto;
+        }
+
+        .star-name {
+            display: inline-block;
+        }
+
+        .star-name:hover {
+            text-decoration: underline;
+        }
+
+        .card {
+            margin-bottom: 15px;
+        }
+    </style>
+
+    </style>
+
 </head>
-
 <body>
-
 <section class="hero is-success">
     <div class="hero-body">
-        <div class="container has-text-centered">
-            <p class="title">
-                Success hero
-            </p>
-            <p class="subtitle">
-                Success subtitle
-            </p>
+        <div class="container center">
+            <h1 class="title">
+                비전공자도 할 수 있다😆
+            </h1>
+            <h2 class="subtitle">
+                비전공자를 위한 서적
+            </h2>
         </div>
     </div>
 </section>
 
-<section class="section">
-    <div class='searchBox'>
-        <div class="field has-addons">
-            <div class="control is-expanded">
-                <input class="input" type="text">
-            </div>
-            <div class="control">
-                <a class="button is-success">
-                    검색
-                </a>
-            </div>
-        </div>
-        </div>
-</section>
+<div class="star-list" id="star-box">
 
-
-<div class='nuguri'>
-    <img src="https://lh3.googleusercontent.com/proxy/-ZcJ1yDqzLbVKXGMRUXvoumUuIXuDn0BdYeimEuE07jAMruJLuE6_iNuzElAFVILqpdvDo5zv0InQVEWwru1NXWBjMI3W75jSQn5Ssq4igPGe3lW9_7Wwq2LbEJ3pRq73U0631hgPsPo7U2rs13-0sjwATrOJTtQiFNngxsOZ2nsWZmXtNUECa6WIXjP2bKT_zZyZT-3ZWTtFkUEj8uLLIEEqzfjGqgQJGZ0tCzbbl8ybA7Kd74ealgFvAjzx9ChMKmxNpWB"
-         alt="">
-</div>
-
-<div class="wrap">
-
-    <div id="cards-box" class="card-columns">
-    </div>
 </div>
 
 
 </body>
-
 </html>
 
 
-<!--                                                 <p>comment</p>-->
-<!--                                                <div class="input-group mb-3">-->
-<!--                                                  <input id="comment" type="text" class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2">-->
-<!--                                                  <div class="input-group-append">-->
-<!--                                                    <button onclick="postArticle()" class="btn btn-outline-secondary" type="button">등록</button>-->
-<!--                                                  </div>-->
-<!--                                                </div>-->
-
-
-{# function postArticle() {#}
-{#             let comment = $('#comment').val()#}
-{#        #}
-{#             $.ajax({#}
-{#                 type: "POST",#}
-{#                 url: "/memo",#}
-{#                 data: {comment_give:comment},#}
-{#                 success: function (response) { // 성공하면#}
-{#                     alert(response["msg"]);#}
-{#                 }#}
-{#             })#}
-{#         }#}
-
-
-{#<div class = "phone_i">#}
-{#                                                <span style="color:blue">#}
-{#                                                  <i class="fa fa-camera fa-1g"></i>#}
-{#                                                </span>#}
-{#                                                 &nbsp ${equip}#}
-{#                                                </div>#}
