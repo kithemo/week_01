@@ -1,63 +1,113 @@
-* {
-    font-family: 'Cute Font', cursive;
+/*배너*/
+body {
+    background-color: white;
+    min-height: 100vh;
 }
 
 .section {
-    width: 500px;
+    padding: 1rem 1.5rem;
+    max-width: 750px;
     margin: auto;
 }
 
-.wrap {
-    width: 1000px;
-    margin: auto;
+.title {
+    font-weight: 800;
+    font-size: 5rem;
+    font-family: 'Noto Sans JP', sans-serif;
+
+
 }
 
+.subtitle {
+    font-size: 2rem;
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+.is-red{
+    color:red;
+}
+
+/*로그인/회원가입 박스*/
+.button.is-sparta {
+    background-color: #48c774;
+    border-color: transparent;
+    color: #fff !important;
+}
+
+.button.is-sparta.is-outlined {
+    background-color: transparent;
+    border-color: #48c774;
+    color: #48c774 !important;
+}
+
+.help {
+    color: gray;
+}
+
+.image{
+    width : 90px;
+    height : 135px;
+    margin-right : 20px;
+}
+
+.star-list {
+    width: 700px;
+    margin: 20px auto 0 auto;
+}
+
+.star-name {
+    display: inline-block;
+}
+
+.star-name:hover {
+    text-decoration: underline;
+}
 
 .card {
-    margin: 50px;
-    height: 500px;
-}
-
-.card-img-top {
-    height: 200px
+    margin-bottom: 15px;
 }
 
 
-.card-title{
-        font-size: 25px;
-
+.modal-content {
+    width: 600px;
+    max-width: 80%;
 }
 
-/*.phone_i{*/
-/*overflow: hidden;*/
+input::-webkit-calendar-picker-indicator {
+    display: none;
+}
 
-/*    font-size: 20px;*/
+.image img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
 
-/*    text-align: left;*/
-/*    margin-top: 1.5rem;*/
-
-/*    display: -webkit-box;*/
-/*    -webkit-line-clamp: 2;*/
-/*        -webkit-box-orient: vertical;*/
-
-
-
-
-.card-text {
-    overflow: hidden;
-
-    font-size: 20px;
-
-    display: -webkit-box;
-    -webkit-line-clamp: 5;
-    -webkit-box-orient: vertical;
+.is-container{
+    width : 300px;
+    float: right;
 
 }
 
 .nuguri{
-    width : 200px;
-    height : 200px;
+    display : block;
     margin : auto;
+    width : 300px;
+    height : 300px;
 }
+
+.tag_back{
+    background-color : beige;
+}
+.bold{
+    font-weight : bold;
+}
+
+
+
+
+
+
+
 
 
