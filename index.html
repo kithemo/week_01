@@ -15,6 +15,11 @@
     <!-- Font Awesome CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    {#구글 폰트#}
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='mystyle.css') }}" rel="stylesheet">
+
 
     <!-- JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -23,31 +28,75 @@
 
     <script>
 
+        function toggle_like(book_id, type) {
+            console.log(book_id, type)
+            let $a_like = $(`#${book_id} a[aria-label='heart']`)
+            let $i_like = $a_like.find("i")
+            if ($i_like.hasClass("fa-heart")) {
+                $.ajax({
+                    type: "POST",
+                    url: "/update_like",
+                    data: {
+                        book_id_give: book_id,
+                        type_give: type,
+                        action_give: "unlike"
+                    },
+                    success: function (response) {
+                        console.log("unlike")
+                        $i_like.addClass("fa-heart-o").removeClass("fa-heart")
+                        $a_like.find("span.like-num").text(response["count"])
+                    }
+                })
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: "/update_like",
+                    data: {
+                        book_id_give: book_id,
+                        type_give: type,
+                        action_give: "like"
+                    },
+                    success: function (response) {
+                        console.log("like")
+                        $i_like.addClass("fa-heart").removeClass("fa-heart-o")
+                        $a_like.find("span.like-num").text(response["count"])
+                    }
+                })
+
+            }
+        }
+
         $(document).ready(function () {
-            showbooks();
+            get_books();
         });
 
-        function showbooks() {
+        function get_books() {
             $.ajax({
                 type: 'GET',
-                url: '/api/list',
+                url: '/get_books',
                 data: {},
                 success: function (response) {
-                    let books = response['all_books']
-                    for (let i = 0; i < books.length; i++) {
-                        let title = books[i]['title']
-                        let img = books[i]['image']
-                        let author = books[i]['author']
-                        let url = books[i]['url']
-                        let tag1 = books[i]['tag1']
-                        let tag2 = books[i]['tag2']
-                        let tag3 = books[i]['tag3']
+                    if (response["result"] == "success") {
+                        let books = response['books']
+                        for (let i = 0; i < books.length; i++) {
 
-                        let temp_html = `<div class="card">
+                            let class_heart = books[i]['heart_by_me'] ? "fa-heart" : "fa-heart-o"
+                            let count_heart = books[i]['count_heart']
+
+                            let id = books[i]['_id']
+                            let title = books[i]['title']
+                            let img = books[i]['image']
+                            let author = books[i]['author']
+                            let url = books[i]['url']
+                            let tag1 = books[i]['tag1']
+                            let tag2 = books[i]['tag2']
+                            let tag3 = books[i]['tag3']
+
+                            let temp_html = `<div class="card" id="${id}">
                                                 <div class="card-content">
                                                     <div class="media">
                                                         <div class="media-left">
-                                                            <figure class="image is-96x96">
+                                                            <figure class="image">
                                                                 <img
                                                                         src="${img}"
                                                                         alt="Placeholder image"
@@ -57,104 +106,84 @@
                                                         <div class="media-content">
                                                             <a href="${url}" target="_blank" class="star-name title is-4">${title} </a>
                                                             <br>
-                                                            <p class="subtitle is-6">${author}</p>
-                                                            <p class="subtitle is-6">${tag1}${tag2}${tag3}</p>
+                                                            <p class="subtitle is-6 bold">${author}</p>
+                                                            <p class="subtitle is-6"><span class="tag_back">${tag1} ${tag2} ${tag3}</span></p>
                                                             <br>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <footer class="card-footer">
-                                                    <a href="#" onclick="likeStar('${title}')" class="card-footer-item has-text-info">
-                                                        좋아요
+                                                <footer class="level is-mobile">
+                                                    <a class="level-item is-red" aria-label='heart' onclick="toggle_like( '${id}', 'heart')">
                                                         <span class="icon">
-                                              <i class="fa fa-camera"></i>
-                                            </span>
+                                                            <i class="fa ${class_heart}" aria-hidden="true"></i></span>&nbsp;<span class="like-num">${count_heart}</span>
+                                                        </span>
                                                     </a>
-
                                                     <a href="#" onclick="deleteStar('${title}')" class="card-footer-item has-text-black">
-                                                        스크랩
                                                         <span class="icon">
-                                              <i class="fa fa-camera"></i>
-                                            </span>
+                                                            <i class="fa fa-camera"></i>
+                                                        </span>&nbsp;스크랩
                                                     </a>
                                                 </footer>
                                             </div>`
 
-                        $('#star-box').append(temp_html)
+                            $('#star-box').append(temp_html)
+                        }
                     }
                 }
             });
         }
 
-        // function likeStar(name) {
-        //     $.ajax({
-        //         type: 'POST',
-        //         url: '/api/like',
-        //         data: {name_give:name},
-        //         success: function (response) {
-        //             alert(response['msg']);
-        //             window.location.reload()
-        //         }
-        //     });
-        // }
-
-
-        // <a href="#" onClick="deleteStar('${title}')" className="card-footer-item has-text-danger">
-        //     댓글
-        //     <span className="icon">
-        //                                       <i className="fa fa-camera"></i>
-        //                                     </span>
-        // </a>
+        function sign_out() {
+            $.removeCookie('mytoken', {path: '/'});
+            alert('로그아웃!')
+            window.location.href = "/login"
+        }
 
 
     </script>
 
-    <style>
-        .center {
-            text-align: center;
-        }
 
-        .star-list {
-            width: 700px;
-            margin: 20px auto 0 auto;
-        }
-
-        .star-name {
-            display: inline-block;
-        }
-
-        .star-name:hover {
-            text-decoration: underline;
-        }
-
-        .card {
-            margin-bottom: 15px;
-        }
-    </style>
-
-    </style>
-
+    </nav>
 </head>
 <body>
 <section class="hero is-success">
-    <div class="hero-body">
-        <div class="container center">
-            <h1 class="title">
-                비전공자도 할 수 있다😆
-            </h1>
-            <h2 class="subtitle">
-                비전공자를 위한 서적
-            </h2>
-        </div>
+    <div class="hero-body has-text-centered" style="padding-bottom:1rem;margin:auto;">
+        <h1 class="title is-white">비전공자도 할 수 있다</h1>
+        <h3 class="subtitle is-white">오늘부터 한 걸음</h3>
+        <br>
     </div>
+
 </section>
 
-<div class="star-list" id="star-box">
+
+<div class="content is-container">
+    <nav id="btns-me" class="level is-mobile " style="margin-top:2rem">
+        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"
+           onclick="">
+            스크랩&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out"
+                                                                aria-hidden="true"></i></span>
+        </a>
+        <a class="button level-item has-text-centered is-sparta is-outlined" aria-label="logout"
+           onclick="sign_out()">
+            로그아웃&nbsp;&nbsp;&nbsp;<span class="icon is-small"><i class="fa fa-sign-out"
+                                                                 aria-hidden="true"></i></span>
+        </a>
+    </nav>
+</div>
+
+
+<div class="container">
+    <img class="nuguri" src="{{ url_for("static", filename="nuguri.jpg") }}">
+
+</div>
+
+<div class="star-list" id="star-box" class="ohbin">
 
 </div>
 
 
 </body>
 </html>
+
 
 
